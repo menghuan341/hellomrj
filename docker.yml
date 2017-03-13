@@ -1,20 +1,20 @@
 ---
-- hosts: localhost
+- hosts: all
   gather_facts: false
 
   tasks:
   
     - name: create jenkins container
       docker_container:
-        docker_host: 10.32.151.199:9527
         name: my_jenkins
         image: jenkins
 
     - name: add container to inventory
+      delegate_to: localhost
       add_host:
         name: my_jenkins
         ansible_connection: docker
-        ansible_docker_extra_args: "--tlsverify --tlscacert=/path/to/ca.pem --tlscert=/path/to/client-cert.pem --tlskey=/path/to/client-key.pem -H=tcp://10.32.151.199:9527"
+        ansible_docker_extra_args: "--tlsverify --tlscacert=/path/to/ca.pem --tlscert=/path/to/client-cert.pem --tlskey=/path/to/client-key.pem -H=tcp://{{ansible_ssh_host}}:4243"
         ansible_user: jenkins
       changed_when: false
 
